@@ -39,7 +39,14 @@
       v-model="mode"
       value="gdp_md_est"
       @change="changeMode"/>
-    gross domestic product
+    gross domestic product (M)
+
+    <input
+      type="radio"
+      v-model="mode"
+      value="gdp_per_cap"
+      @change="changeMode"/>
+    gross domestic product per capita
 
     <div>
       {{ message }}
@@ -61,7 +68,7 @@
 <script src="./require.js"></script>
 <script>
   require([
-    './rolling-globe.min.js',
+    '../rolling-globe.min.js',
     './vue.min.js',
   ], function (rollingGlobe, Vue) {
 
@@ -91,28 +98,49 @@
 
         g.getCountryPopupHtml = function (id) {
           let country = g.getCountryFeature(id)
-          return country.properties.name + ': ' + country.properties.pop_est
+          return country.properties.name + ': ' + g.getCountryValue(id)
         }
 
         window.onresize = function () { g.resize() }
 
-        this.resetCountryValues(this.mode)
+        this.changeMode()
       },
 
       methods: {
 
-        changeMode: function (e) {
-          this.resetCountryValues(this.mode)
-          console.log('changeMode', this.mode)
-        },
-
-        resetCountryValues (propertyKey) {
+        changeMode: function () {
+          let propertyKey = this.mode
           for (let country of g.countryFeatures) {
-            g.setCountryValue(country.id, country.properties[propertyKey])
+            let value
+            if (propertyKey === 'gdp_per_cap') {
+              let gdp = parseFloat(country.properties.gdp_md_est)
+              let pop = parseFloat(country.properties.pop_est)
+              if (gdp < 0 || pop < 0) {
+                value = 0
+              } else {
+                value = parseInt(1000000 * gdp / pop)
+              }
+            } else {
+              value = country.properties[propertyKey]
+            }
+            g.setCountryValue(country.id, value)
           }
-          let color = this.mode === 'pop_est' ? 'green' : 'blue'
-          g.highlightColor = this.mode === 'pop_est' ? 'red' : 'orange'
-          g.resetCountryColorsFromValues(color)
+          let color
+          if (this.mode === 'pop_est') {
+            color = 'green'
+            g.highlightColor = 'red'
+          } else if (this.mode === 'gdp_md_est') {
+            color = 'blue'
+            g.highlightColor = 'orange'
+          } else {
+            color = 'red'
+            g.highlightColor = 'pink'
+          }
+          if (propertyKey === 'gdp_per_cap') {
+            g.resetCountryColorsFromValues(color, 100000)
+          } else {
+            g.resetCountryColorsFromValues(color)
+          }
           g.draw()
           g.drawLegend()
         }

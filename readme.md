@@ -1,8 +1,8 @@
 
 
-# Rotating Globe Choropleth in D3
+# Rotating Choropleth Globe in D3
 
-Convenient D3-SVG globe for chloropeths of countries with programmable:
+Programmable D3 Globe for chloropeths of countries with modifiable:
 
   - country colors
   - tool-tips
@@ -14,19 +14,16 @@ Convenient D3-SVG globe for chloropeths of countries with programmable:
 
 Demo: <https://boscoh.github.io/rolling-globe>
 
-Based on Mike Bostocks's world-atlas 1:110 D3 topo-json data with basic country data.
-
-Rolling globe version of [datamaps](https://github.com/markmarkoh/datamaps/blob/master/README.md#getting-started)
+Based on Mike Bostocks's world-atlas dataset at 1:110 scale. If you need other programmable maps, try [datamaps](https://github.com/markmarkoh/datamaps/blob/master/README.md#getting-started).
 
 ## Installation
 
-Download the package
+Download the [package](https://github.com/boscoh/rolling-globe/archive/master.zip).
 
-Look at the example `index.html` file.
+Open the example `index.html` file in the browser.
 
 ## Quick-start
 
-## How-to
 
 ## Development
 
