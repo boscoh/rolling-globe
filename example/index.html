@@ -1,0 +1,122 @@
+<style>
+  html {
+    font-family: "Avenir", Helvetica, sans-serif;
+    font-size: 0.8em;
+    padding: 30px;
+  }
+  body {
+    text-align: center;
+  }
+  .countryTooltip {
+    background: #fff;
+    padding: 5px;
+    border: solid #DDD 1px;
+    color: #666;
+  }
+</style>
+
+<body>
+  <a href="https://github.com/boscoh">
+    <img 
+      style="position: absolute; top: 0; right: 0; border: 0;" 
+      src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" 
+      alt="Fork me on GitHub">
+  </a>
+
+  <h1>Rolling Chloropeth Globe Demo</h1>
+
+  <div id="app">
+
+    <input
+      type="radio"
+      v-model="mode"
+      value="pop_est"
+      @change="changeMode"/>
+    population
+
+    <input
+      type="radio"
+      v-model="mode"
+      value="gdp_md_est"
+      @change="changeMode"/>
+    gross domestic product
+
+    <div>
+      {{ message }}
+      &nbsp;
+    </div>
+
+  </div>
+
+  <div 
+    id="globe"
+    style="
+      width: calc(100vw - 60px);
+      height: calc(100vh - 160px);">
+  </div>
+
+</body>
+
+<!-- development version, includes helpful console warnings -->
+<script src="./require.js"></script>
+<script>
+  require([
+    '../dist/rolling-globe.min.js',
+    './vue.min.js',
+  ], function (rollingGlobe, Vue) {
+
+    var g = new rollingGlobe.Globe('#globe')
+
+    var app = new Vue({
+      el: '#app',
+
+      data: {
+        message: '',
+        mode: 'pop_est' // or 'gdp_md_est
+      },
+
+      mounted: function () {
+
+        g.clickCountry = function (id) {
+          app.message = 'clicked: ' + g.getCountryFeature(id).properties.name
+          g.setHighlight(id)
+          g.rotateTransitionToCountry(id, function () {
+            g.draw()
+          })
+        }
+
+        g.dblclickCountry = function (id) {
+          app.message = 'double-clicked: ' + g.getCountryFeature(id).properties.name
+        }
+
+        g.getCountryPopupHtml = function (id) {
+          let country = g.getCountryFeature(id)
+          return country.properties.name + ': ' + country.properties.pop_est
+        }
+
+        window.onresize = function () { g.resize() }
+
+        this.resetCountryValues(this.mode)
+      },
+
+      methods: {
+
+        changeMode: function (e) {
+          this.resetCountryValues(this.mode)
+          console.log('changeMode', this.mode)
+        },
+
+        resetCountryValues (propertyKey) {
+          for (let country of g.countryFeatures) {
+            g.setCountryValue(country.id, country.properties[propertyKey])
+          }
+          let color = this.mode === 'pop_est' ? 'green' : 'blue'
+          g.highlightColor = this.mode === 'pop_est' ? 'red' : 'orange'
+          g.resetCountryColorsFromValues(color)
+          g.draw()
+          g.drawLegend()
+        }
+      }
+    })
+  })
+</script>
