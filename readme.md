@@ -4,13 +4,13 @@
 
 Programmable D3 Globe for chloropeths of countries with modifiable:
 
-  - country colors
-  - tool-tips
-  - click
-  - double-click
-  - rotations
-  - country highlights
-  - country transitions
+ ` - country colors
+ ` - tool-tips
+ ` - click
+ ` - double-click
+ ` - rotations
+ ` - outline highlights
+ ` - country transitions
 
 Demo: <https://boscoh.github.io/rolling-globe>
 
@@ -20,10 +20,26 @@ Based on Mike Bostocks's world-atlas dataset at 1:110 scale. If you need other p
 
 Download the [package](https://github.com/boscoh/rolling-globe/archive/master.zip).
 
-Open the example `index.html` file in the browser.
+Open the example `example/index.html` file in the browser.
 
 ## Quick-start
 
+Once downloadable is done:
+
+```
+<div 
+  id="globe"
+  style="
+    width: calc(100vw - 60px);
+    height: calc(100vh - 160px);">
+</div>
+<script src="./require.js"></script>
+<script>
+require(['../dist/rolling-globe.min.js', function (rollingGlobe) {
+    var g = new rollingGlobe.Globe('#globe')
+})
+</script>
+```
 
 ## Development
 
@@ -41,9 +57,8 @@ The module has been written in ES6 and transpiled into a single file for easy de
 ES6 is much easier to edit and during development, it is suggested to run:
 
 ```bash
-> webpack --watch
+> webpack` --watch
 ```
-
 
 ### References
 
@@ -57,41 +72,41 @@ Incorporates Mike Bostock's [world-atlas](https://github.com/topojson/world-atla
 
 Properties:
 
- -  this.world - topoJson data used to generate the SVG
- -  this.countryFeatures - list of features for each country
- -  this.iCountryFromId - dictionary to map ISO_N3 ID's to iCountry index
- -  this.nullColor - color string of country with no values set
- -  this.borderColor - color of country borders
- -  this.outerBorderColor - color of globe border
- -  this.fillColor - color water
- -  this.highlightColor - color of border outline for highlighted country
- -  this.colors - list of colors for countries
- -  this.borderColors - list of colors for borders of countries
- -  this.scaleFactor - zoom factor for globe
- -  this.iHighlight - iCountry to be highlighted with this.highlightColor; none if null
- -  this.values - list of numerical values for each country
+ - `this.world` - topoJson data used to generate the SVG
+ - `this.countryFeatures` - list of features for each country
+ - `this.iCountryFromId` - dictionary to map ISO_N3 ID's to internal Country index
+ - `this.nullColor` - color string of country with no values set
+ - `this.borderColor` - color of country borders
+ - `this.outerBorderColor` - color of globe border
+ - `this.fillColor` - color water
+ - `this.highlightColor` - color of border outline for highlighted ountry
+ - `this.colors` - list of colors for countries
+ - `this.borderColors` - list of colors for borders of countries
+ - `this.scaleFactor` - zoom factor for globe
+ - `this.iHighlight` - iCountry to be highlighted with his.highlightColor; none if null
+ - `this.values` - list of numerical values for each country
 
 Methods:
 
--  getCountryFeature(id)
--  dblclickCountry(id)
--  clickCountry(id)
--  setCountryValue(id, value)
--  getCountryValue(id)
--  setCountryColor(id, color)
--  getCountryColor(id)
--  getCountryPopupHtml(id)
--  resize()
--  rotateTo(r)
--      r = [-Longitude, -Latitude]
--    /**
--     *
--     * @param targetR - [-Longitude, -Latitude]
--     * @param callback
--     */
--  rotateTransition(targetR, callback)
--  rotateTransitionToCountry(id, callback)
--  draw()
+ -  `getCountryFeature(id)`
+ -  `dblclickCountry(id)`
+ -  `clickCountry(id)`
+ -  `setCountryValue(id, value)`
+ -  `getCountryValue(id)`
+ -  `setCountryColor(id, color)`
+ -  `getCountryColor(id)`
+ -  `getCountryPopupHtml(id)`
+ -  `resize()`
+ -  `rotateTo(r)`
+ -   r = [-Longitude, -Latitude]
+ -  /**
+ -   *
+ -   * @param targetR` - [-Longitude,` -Latitude]
+ -   * @param callback
+ -   */
+ -  `rotateTransition(targetR, callback)`
+ -  `rotateTransitionToCountry(id, callback)`
+ -  `draw()`
 
 CountryFeatures deserves a bit more unpacking:
 
@@ -133,12 +148,12 @@ CountryFeatures deserves a bit more unpacking:
   "mapcolor13": 7,
   "pop_est": 21262641,
   "gdp_md_est": 800200,
-  "pop_year": -99,
+  "pop_year":` -99,
   "lastcensus": 2006,
-  "gdp_year": -99,
+  "gdp_year":` -99,
   "economy": "2. Developed region: nonG7",
   "income_grp": "1. High income: OECD",
-  "wikipedia": -99,
+  "wikipedia":` -99,
   "fips_10": "",
   "iso_a2": "AU",
   "iso_a3": "AUS",
@@ -146,11 +161,11 @@ CountryFeatures deserves a bit more unpacking:
   "un_a3": 36,
   "wb_a2": "AU",
   "wb_a3": "AUS",
-  "woe_id": -99,
+  "woe_id":` -99,
   "adm0_a3_is": "AUS",
   "adm0_a3_us": "AUS",
-  "adm0_a3_un": -99,
-  "adm0_a3_wb": -99,
+  "adm0_a3_un":` -99,
+  "adm0_a3_wb":` -99,
   "continent": "Oceania",
   "region_un": "Oceania",
   "subregion": "Australia and New Zealand",
@@ -158,7 +173,7 @@ CountryFeatures deserves a bit more unpacking:
   "name_len": 9,
   "long_len": 9,
   "abbrev_len": 4,
-  "tiny": -99,
+  "tiny":` -99,
   "homepart": 1
 }
 ```
