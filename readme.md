@@ -3,13 +3,16 @@
 # Rotating Globe Choropleth in D3
 
 Convenient D3-SVG globe for chloropeths of countries with programmable:
-    - country colors
-    - tool-tips
-    - click
-    - double-click
-    - rotations
-    - country highlights
-    - country transitions
+
+  - country colors
+  - tool-tips
+  - click
+  - double-click
+  - rotations
+  - country highlights
+  - country transitions
+
+Demo: <https://boscoh.github.io/rolling-globe>
 
 Based on Mike Bostocks's world-atlas 1:110 D3 topo-json data with basic country data.
 
@@ -53,44 +56,45 @@ Each country is internally represented by an index iCountry that refers to the c
 
 Most of the methods accesses or refers to countries by the ISO_N3 numeric doe as a string.
 
-Incorporates Mike Bostock's [world-atlas](https://github.com/topojson/world-atlas 1:110 scale map, with country data
+Incorporates Mike Bostock's [world-atlas](https://github.com/topojson/world-atlas) 1:110 scale map, with country data
 
-Properties
-    this.world - topoJson data used to generate the SVG
-    this.countryFeatures - list of features for each country
-    this.iCountryFromId - dictionary to map ISO_N3 ID's to iCountry index
-    this.nullColor - color string of country with no values set
-    this.borderColor - color of country borders
-    this.outerBorderColor - color of globe border
-    this.fillColor - color water
-    this.highlightColor - color of border outline for highlighted country
-    this.colors - list of colors for countries
-    this.borderColors - list of colors for borders of countries
-    this.scaleFactor - zoom factor for globe
-    this.iHighlight - iCountry to be highlighted with this.highlightColor; none if null
-    this.values - list of numerical values for each country
+Properties:
+
+ -  this.world - topoJson data used to generate the SVG
+ -  this.countryFeatures - list of features for each country
+ -  this.iCountryFromId - dictionary to map ISO_N3 ID's to iCountry index
+ -  this.nullColor - color string of country with no values set
+ -  this.borderColor - color of country borders
+ -  this.outerBorderColor - color of globe border
+ -  this.fillColor - color water
+ -  this.highlightColor - color of border outline for highlighted country
+ -  this.colors - list of colors for countries
+ -  this.borderColors - list of colors for borders of countries
+ -  this.scaleFactor - zoom factor for globe
+ -  this.iHighlight - iCountry to be highlighted with this.highlightColor; none if null
+ -  this.values - list of numerical values for each country
 
 Methods:
 
-    getCountryFeature(id)
-    dblclickCountry(id)
-    clickCountry(id)
-    setCountryValue(id, value)
-    getCountryValue(id)
-    setCountryColor(id, color)
-    getCountryColor(id)
-    getCountryPopupHtml(id)
-    resize()
-    rotateTo(r)
-        r = [-Longitude, -Latitude]
-      /**
-       *
-       * @param targetR - [-Longitude, -Latitude]
-       * @param callback
-       */
-    rotateTransition(targetR, callback)
-    rotateTransitionToCountry(id, callback)
-    draw()
+-  getCountryFeature(id)
+-  dblclickCountry(id)
+-  clickCountry(id)
+-  setCountryValue(id, value)
+-  getCountryValue(id)
+-  setCountryColor(id, color)
+-  getCountryColor(id)
+-  getCountryPopupHtml(id)
+-  resize()
+-  rotateTo(r)
+-      r = [-Longitude, -Latitude]
+-    /**
+-     *
+-     * @param targetR - [-Longitude, -Latitude]
+-     * @param callback
+-     */
+-  rotateTransition(targetR, callback)
+-  rotateTransitionToCountry(id, callback)
+-  draw()
 
 CountryFeatures deserves a bit more unpacking:
 
