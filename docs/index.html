@@ -85,7 +85,8 @@
       mounted: function () {
 
         g.clickCountry = function (id) {
-          app.message = 'clicked: ' + g.getCountryFeature(id).properties.name
+          let i = g.iCountryFromId[id]
+          app.message = 'clicked: ' + g.getCountryFeature(i).properties.name
           g.setHighlight(id)
           g.rotateTransitionToCountry(id, function () {
             g.draw()
@@ -93,12 +94,13 @@
         }
 
         g.dblclickCountry = function (id) {
-          app.message = 'double-clicked: ' + g.getCountryFeature(id).properties.name
+          app.message = 'double-clicked: ' + g.getCountryFeature(i).properties.name
         }
 
         g.getCountryPopupHtml = function (id) {
-          let country = g.getCountryFeature(id)
-          return country.properties.name + ': ' + g.getCountryValue(id)
+          let i = g.iCountryFromId[id]
+          let country = g.getCountryFeature(i)
+          return country.properties.name + ': ' + g.getCountryValue(i)
         }
 
         window.onresize = function () { g.resize() }

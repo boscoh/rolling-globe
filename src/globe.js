@@ -71,7 +71,7 @@ class Globe {
     this.world = world
     this.selector = selector
     this.scaleFactor = 1 / 2.2
-    this.iHighlight = null
+    this.iHighlightCountry = null
 
     this.countryFeatures = topojson.feature(
       this.world,
@@ -90,11 +90,27 @@ class Globe {
       let countryFeature = this.countryFeatures[i]
       this.iCountryFromId[countryFeature.id] = i
       for (let info of worldData) {
-        if (info.iso_n3 === countryFeature.id) {
+        if (info.iso_n3 === countryFeature.id && info.iso_n3 !== '-99') {
           _.assign(countryFeature.properties, info)
           break
         }
       }
+    }
+
+    // special data mangling for resolving the two data-sets
+    // in world-110m set from vector and country data
+    let kosovo = worldData[0]
+    let somaliland = worldData[1]
+    let northernCyprus = worldData[2]
+    _.assign(this.countryFeatures[88].properties, kosovo)
+    _.assign(this.countryFeatures[38].properties, northernCyprus)
+    _.assign(this.countryFeatures[145].properties, somaliland)
+
+    let tags = ['adm0_a3', 'gu_a3', 'su_a3', 'brk_a3', 'iso_a3', 'iso_n3', 'adm0_a3_is']
+    for (let i = 0; i < this.countryFeatures.length; i += 1) {
+      let countryFeature = this.countryFeatures[i]
+      let strs = _.map(tags, t => countryFeature.properties[t])
+      console.log(i, countryFeature.properties.geounit, strs)
     }
 
     this.nullColor = '#CCB'
@@ -193,8 +209,7 @@ class Globe {
     this.svg
       .selectAll('path.country')
       .on('mouseover', (d, i) => {
-        let id = this.countryFeatures[i].id
-        let html = this.getCountryPopupHtml(id)
+        let html = this.getCountryPopupHtml(i)
         if (html) {
           this.tooltip
             .html(html)
@@ -213,12 +228,10 @@ class Globe {
         this.tooltip.style('opacity', 0).style('display', 'none')
       })
       .on('dblclick', (d, i) => {
-        let id = this.countryFeatures[i].id
-        this.dblclickCountry(id)
+        this.dblclickCountry(i)
       })
       .on('click', (d, i) => {
-        let id = this.countryFeatures[i].id
-        this.clickCountry(id)
+        this.clickCountry(i)
       })
 
     // build the legend
@@ -244,28 +257,24 @@ class Globe {
     this.draw()
   }
 
-  getCountryFeature(id) {
-    let iCountry = this.iCountryFromId[id]
-    if (!_.isNil(iCountry)) {
-      return this.countryFeatures[iCountry]
-    }
-    return null
+  getCountryFeature(iCountry) {
+    return this.countryFeatures[iCountry]
   }
 
   /**
    * To be overridden
    * @param id
    */
-  dblclickCountry(id) {
-    console.log('> Globe.dblclickCountry', id, d3.event.pageX, d3.event.pageY)
+  dblclickCountry(iCountry) {
+    console.log('> Globe.dblclickCountry', iCountry, d3.event.pageX, d3.event.pageY)
   }
 
   /**
    * To be overridden
    * @param id
    */
-  clickCountry(id) {
-    console.log('> Globe.clickCountry', id, d3.event.pageX, d3.event.pageY)
+  clickCountry(iCountry) {
+    console.log('> Globe.clickCountry', iCountry, d3.event.pageX, d3.event.pageY)
   }
 
   moveTooltip() {
@@ -274,31 +283,13 @@ class Globe {
       .style('top', d3.event.pageY - 15 + 'px')
   }
 
-  setCountryValue(id, value) {
-    this.values[this.iCountryFromId[id]] = value
-  }
-
-  getCountryValue(id) {
-    let iCountry = this.iCountryFromId[id]
-    return this.values[iCountry]
-  }
-
-  setCountryColor(id, color) {
-    this.colors[this.iCountryFromId[id]] = color
-  }
-
-  getCountryColor(id) {
-    let iCountry = this.iCountryFromId[id]
-    return this.colors[iCountry]
-  }
-
   /**
    * To be overridden
    * @param id
    * @returns String - contains HTML to write to popup
    */
-  getCountryPopupHtml(id) {
-    let value = this.getCountryValue(id)
+  getCountryPopupHtml(iCountry) {
+    let value = this.values[iCountry]
     if (value === null) {
       return ''
     }
@@ -335,8 +326,8 @@ class Globe {
     this.drawHighlight()
   }
 
-  setHighlight(id) {
-    this.iHighlight = this.iCountryFromId[id]
+  setHighlight(iCountry) {
+    this.iHighlightCountry = iCountry
   }
 
   drawHighlight() {
@@ -345,7 +336,7 @@ class Globe {
       .selectAll('path.highlightCountry')
       .attr('d', this.path)
       .style('stroke', (d, i) => {
-        if (i === this.iHighlight) {
+        if (i === this.iHighlightCountry) {
           return this.highlightColor
         } else {
           return 'none'
@@ -354,6 +345,8 @@ class Globe {
   }
 
   /**
+   * Rotates globe directly to coordinates in r [-long, -lat]
+   *
    * @param r - [-Longitude, -Latitude]
    */
   rotateTo(r) {
@@ -367,14 +360,26 @@ class Globe {
     this.draw()
   }
 
-  rotateTransitionToCountry(id, callback) {
-    let selectedFeature = null
-    for (let feature of this.countryFeatures) {
-      if (id === feature.id) {
-        selectedFeature = feature
-      }
+  /**
+   * Animated transition to this.rotateTo with callback when
+   * the animation is finished
+   *
+   * @param targetR - [-Longitude, -Latitude]
+   * @param callback
+   */
+  rotateTransition(targetR, callback) {
+    let interpolateR = d3.interpolate(this.projection.rotate(), targetR)
+    let rotate = t => {
+      this.rotateTo(interpolateR(t))
     }
-    console.log('rotateToCountry', selectedFeature)
+    d3.transition()
+      .duration(1250)
+      .tween('rotate', () => rotate)
+      .on('end', callback)
+  }
+
+  rotateTransitionToICountry(iCountry, callback) {
+    let selectedFeature = this.countryFeatures[iCountry]
     let p = d3.geoCentroid(selectedFeature)
     this.rotateTransition([-p[0], -p[1]], callback)
   }
@@ -402,22 +407,6 @@ class Globe {
         this.colors[i] = this.paletteScale(this.values[i])
       }
     }
-  }
-
-  /**
-   *
-   * @param targetR - [-Longitude, -Latitude]
-   * @param callback
-   */
-  rotateTransition(targetR, callback) {
-    let interpolateR = d3.interpolate(this.projection.rotate(), targetR)
-    let rotate = t => {
-      this.rotateTo(interpolateR(t))
-    }
-    d3.transition()
-      .duration(1250)
-      .tween('rotate', () => rotate)
-      .on('end', callback)
   }
 
   extractPointerPos() {
