@@ -10,7 +10,7 @@ Demo: <https://boscoh.github.io/rolling-globe>
 
 Download the [package](https://github.com/boscoh/rolling-globe/archive/master.zip).
 
-Open the file `example/index.html` in the browser. 
+Open the file `example/index.html` in the browser.
 
 ## How-to
 
@@ -200,23 +200,17 @@ The SVG vector data is stored in `this.world`, and this is taken from Mike Bosto
 The Globe object has the following properties:
 
  - `this.world` - topoJson data used to generate the SVG
-
  - `this.features` - list of features for each country
-
  - `this.values` - list of numerical values for each country
  - `this.colors` - list of colors for countries
  - `this.borderColors` - list of colors for borders of countries
-
  - `this.iCountryFromId` - dictionary to map `iso_n3` to iCountry indice
-
  - `this.nullColor` - color of country with values set to null
  - `this.borderColor` - color of country borders
  - `this.outerBorderColor` - color of globe border
  - `this.fillColor` - color of water
  - `this.highlightColor` - color of border outline for highlighted country
-
  - `this.scaleFactor` - zoom factor for globe
-
  - `this.iHighlightCountry` - iCountry to be highlighted with this.highlightColor; none if null
 
 Methods:
