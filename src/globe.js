@@ -73,7 +73,7 @@ class Globe {
     this.scaleFactor = 1 / 2.2
     this.iHighlightCountry = null
 
-    this.countryFeatures = topojson.feature(
+    this.features = topojson.feature(
       this.world,
       this.world.objects.countries
     ).features
@@ -86,8 +86,8 @@ class Globe {
 
     // look-up country from numeric ISO country ID
     this.iCountryFromId = {}
-    for (let i = 0; i < this.countryFeatures.length; i += 1) {
-      let countryFeature = this.countryFeatures[i]
+    for (let i = 0; i < this.features.length; i += 1) {
+      let countryFeature = this.features[i]
       this.iCountryFromId[countryFeature.id] = i
       for (let info of worldData) {
         if (info.iso_n3 === countryFeature.id && info.iso_n3 !== '-99') {
@@ -102,13 +102,13 @@ class Globe {
     let kosovo = worldData[0]
     let somaliland = worldData[1]
     let northernCyprus = worldData[2]
-    _.assign(this.countryFeatures[88].properties, kosovo)
-    _.assign(this.countryFeatures[38].properties, northernCyprus)
-    _.assign(this.countryFeatures[145].properties, somaliland)
+    _.assign(this.features[88].properties, kosovo)
+    _.assign(this.features[38].properties, northernCyprus)
+    _.assign(this.features[145].properties, somaliland)
 
     let tags = ['adm0_a3', 'gu_a3', 'su_a3', 'brk_a3', 'iso_a3', 'iso_n3', 'adm0_a3_is']
-    for (let i = 0; i < this.countryFeatures.length; i += 1) {
-      let countryFeature = this.countryFeatures[i]
+    for (let i = 0; i < this.features.length; i += 1) {
+      let countryFeature = this.features[i]
       let strs = _.map(tags, t => countryFeature.properties[t])
       console.log(i, countryFeature.properties.geounit, strs)
     }
@@ -121,13 +121,13 @@ class Globe {
 
     this.colors = []
     this.borderColors = []
-    for (let i = 0; i < this.countryFeatures.length; i += 1) {
+    for (let i = 0; i < this.features.length; i += 1) {
       this.colors.push(this.nullColor)
       this.borderColors.push(this.borderColor)
     }
 
     this.values = []
-    for (let i = 0; i < this.countryFeatures.length; i += 1) {
+    for (let i = 0; i < this.features.length; i += 1) {
       this.values.push(null)
     }
 
@@ -171,7 +171,7 @@ class Globe {
     // draw the countries, add change the colors
     this.svg
       .selectAll('.country')
-      .data(this.countryFeatures)
+      .data(this.features)
       .enter()
       .insert('path')
       .attr('class', 'country')
@@ -181,7 +181,7 @@ class Globe {
     // draw the country outlines
     this.svg
       .selectAll('.highlightCountry')
-      .data(this.countryFeatures)
+      .data(this.features)
       .enter()
       .insert('path')
       .attr('class', 'highlightCountry')
@@ -257,10 +257,6 @@ class Globe {
     this.draw()
   }
 
-  getCountryFeature(iCountry) {
-    return this.countryFeatures[iCountry]
-  }
-
   /**
    * To be overridden
    * @param id
@@ -281,6 +277,17 @@ class Globe {
     this.tooltip
       .style('left', d3.event.pageX + 7 + 'px')
       .style('top', d3.event.pageY - 15 + 'px')
+  }
+
+  getICountry(query) {
+    for (let i = 0; i < this.features.length; i += 1) {
+      for (let key of _.keys(query)) {
+        if (this.features[i].properties[key] === query[key]) {
+          return i
+        }
+      }
+    }
+    return null
   }
 
   /**
@@ -379,7 +386,7 @@ class Globe {
   }
 
   rotateTransitionToICountry(iCountry, callback) {
-    let selectedFeature = this.countryFeatures[iCountry]
+    let selectedFeature = this.features[iCountry]
     let p = d3.geoCentroid(selectedFeature)
     this.rotateTransition([-p[0], -p[1]], callback)
   }
@@ -400,7 +407,7 @@ class Globe {
       .domain([0, maxValue])
       .range([minColor, maxColor])
 
-    for (let i = 0; i < this.countryFeatures.length; i += 1) {
+    for (let i = 0; i < this.features.length; i += 1) {
       if (this.values[i] == null) {
         this.colors[i] = this.nullColor
       } else {

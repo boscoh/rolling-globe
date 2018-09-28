@@ -1,114 +1,123 @@
 
 
-# Rotating Choropleth Globe in D3
+# Rolling Choropleth Globe in D3
 
-Programmable D3 Globe for chloropeths of countries with modifiable:
-
- ` - country colors
- ` - tool-tips
- ` - click
- ` - double-click
- ` - rotations
- ` - outline highlights
- ` - country transitions
+Programmable chloropeth Globe in D3 with modifiable country colors, tool-tips, event handling, rotations and highlights.
 
 Demo: <https://boscoh.github.io/rolling-globe>
-
-Based on Mike Bostocks's world-atlas dataset at 1:110 scale. If you need other programmable maps, try [datamaps](https://github.com/markmarkoh/datamaps/blob/master/README.md#getting-started).
 
 ## Installation
 
 Download the [package](https://github.com/boscoh/rolling-globe/archive/master.zip).
 
-Open the example `example/index.html` file in the browser.
+Open the file `example/index.html` in the browser. 
 
-## Quick-start
+## How-to
 
-Once downloadable is done:
+_Quick-start._ To create a globe, you need [`require.js`](https://github.com/requirejs/requirejs) and `rolling-globe.min.js` from the `dist` directory in the package. Then in your HTML file:
 
-```
+```html
 <div 
   id="globe"
   style="
     width: calc(100vw - 60px);
     height: calc(100vh - 160px);">
 </div>
+
 <script src="./require.js"></script>
+
 <script>
-require(['../dist/rolling-globe.min.js', function (rollingGlobe) {
+require(['./rolling-globe.min.js'], function (rollingGlobe) {
     var g = new rollingGlobe.Globe('#globe')
 })
 </script>
 ```
 
+_Matching country indices_. To access the the countries in the globe, you need to obtain the index of the country. This can be obtained using the `getICountry` method, with a query based on the built-in country properties (described in the section Looking up Countries below). To find Australia:
+
+```javascript
+var i = g.getICountry({'iso_a3': 'AUS'})
+```
+
+_Rotation to a selected country._
+```javascript
+g.rotateTransitionToICountry(i)
+```
+
+_Handle clicks and double-clicks._
+
+```javascript
+g.clickCountry = function (i) {
+  console.log('clicked: ' + g.features[i].properties.name)
+  g.setHighlight(i)
+  g.rotateTransitionToICountry(i, function () {
+    g.draw()
+  })
+}
+```
+
+_Setting country colors._
+```javascript
+g.colors[i] = 'green'
+g.borderColors[i] = 'blue'
+```
+
+_Setting color palette based on country values._
+```javascript
+// let's say populations is a list of country
+// populations sorted by the country index
+for (var i = 0; i < g.values.length; i += 1) {
+  g.values[i] = populations[i]
+}
+g.resetCountryColorsFromValues('red')
+g.draw()
+
+// optional legend
+g.drawLegend()
+```
+
+_Highlight specific countries with outline._
+```javascript
+g.highlightColor = 'green'
+g.iHighlightCountry = i
+g.draw()
+```
+
+_Replace tool-tip._
+```javascript
+g.getCountryPopupHtml = function (i) {
+  return g.features[i].properties.name + ': ' + g.values[i]
+}
+```
+
+_Resize_: The resize method will resize the globe to fit the parent `<div>`. Attach the function the window resize function:
+```javascript
+window.onresize = function() { g.resize() }
+```
+
+
 ## Development
 
 Download package and load the module using require.js
 
-To compile `dist/globe.min.js` use:
+The module has been written in ES6, a very nice dialect, and transpiled into a single file for easy deployment, which includes all the necessary data files to get up and running. To compile `dist/globe.min.js` use:
 
 ```bash
 > npm intall
 > webpack
 ```
 
-The module has been written in ES6 and transpiled into a single file for easy deployment. All the necessary data has been compiled into the javascript file.
-
-ES6 is much easier to edit and during development, it is suggested to run:
+During development, it is suggested to run with the file watcher, and re-load `example/index.html` which uses the compiled version in the `dist` directory:
 
 ```bash
-> webpack` --watch
+> webpack --watch
 ```
 
-### References
+### Looking up Countries
 
-By creating an object, the data-structures used to modify the globe can be easily accessed and modified.
+Each country is internally represented by an index iCountry, which refers to SVG vector data stored in `this.world`. This index is used to access the `this.values`, `this.colors`, `this.borderColors` and `this.features`.
 
-Each country is internally represented by an index iCountry that refers to the country attributes stored in the object.
-
-Most of the methods accesses or refers to countries by the ISO_N3 numeric doe as a string.
-
-Incorporates Mike Bostock's [world-atlas](https://github.com/topojson/world-atlas) 1:110 scale map, with country data
-
-Properties:
-
- - `this.world` - topoJson data used to generate the SVG
- - `this.countryFeatures` - list of features for each country
- - `this.iCountryFromId` - dictionary to map ISO_N3 ID's to internal Country index
- - `this.nullColor` - color string of country with no values set
- - `this.borderColor` - color of country borders
- - `this.outerBorderColor` - color of globe border
- - `this.fillColor` - color water
- - `this.highlightColor` - color of border outline for highlighted ountry
- - `this.colors` - list of colors for countries
- - `this.borderColors` - list of colors for borders of countries
- - `this.scaleFactor` - zoom factor for globe
- - `this.iHighlight` - iCountry to be highlighted with his.highlightColor; none if null
- - `this.values` - list of numerical values for each country
-
-Methods:
-
- -  `getCountryFeature(id)`
- -  `dblclickCountry(id)`
- -  `clickCountry(id)`
- -  `setCountryValue(id, value)`
- -  `getCountryValue(id)`
- -  `setCountryColor(id, color)`
- -  `getCountryColor(id)`
- -  `getCountryPopupHtml(id)`
- -  `resize()`
- -  `rotateTo(r)`
- -   r = [-Longitude, -Latitude]
- -  /**
- -   *
- -   * @param targetR` - [-Longitude,` -Latitude]
- -   * @param callback
- -   */
- -  `rotateTransition(targetR, callback)`
- -  `rotateTransitionToCountry(id, callback)`
- -  `draw()`
-
-CountryFeatures deserves a bit more unpacking:
+Each country comes with a default set properties, which is stored in a list `this.features`. Each element in this list `feature` has a sub-field dictionary `feature.properties`, such as this one for Australia:
 
 ```
 {
@@ -177,6 +186,51 @@ CountryFeatures deserves a bit more unpacking:
   "homepart": 1
 }
 ```
+
+To lookup the iCountry index:
+
+  - you can iterate through the country features `this.features` and match the properties of each country to your country identifier.
+  - or use a default dictionary `this.iCountryFromId` that maps the iCountry index to `iso_n3` field of a country feature.
+  - use the lookup method `this.getICountry({key: value})`, which will match the key, value pair to the values in `feature.properties` of each country, and return the iCountry index if successful
+
+### References
+
+The SVG vector data is stored in `this.world`, and this is taken from Mike Bostocks's [world-atlas](https://github.com/topojson/world-atlas), which was generated from the data at [Natural Earth](http://www.naturalearthdata.com/) at the resolution of 1:110.
+
+The Globe object has the following properties:
+
+ - `this.world` - topoJson data used to generate the SVG
+
+ - `this.features` - list of features for each country
+
+ - `this.values` - list of numerical values for each country
+ - `this.colors` - list of colors for countries
+ - `this.borderColors` - list of colors for borders of countries
+
+ - `this.iCountryFromId` - dictionary to map `iso_n3` to iCountry indice
+
+ - `this.nullColor` - color of country with values set to null
+ - `this.borderColor` - color of country borders
+ - `this.outerBorderColor` - color of globe border
+ - `this.fillColor` - color of water
+ - `this.highlightColor` - color of border outline for highlighted country
+
+ - `this.scaleFactor` - zoom factor for globe
+
+ - `this.iHighlightCountry` - iCountry to be highlighted with this.highlightColor; none if null
+
+Methods:
+
+ - `this.getICountry(query)` - query comes in the form of `{key: value}` that is used to search `this.features` for a matching property, function will return matchin iCountry index, or null
+ - `this.dblclickCountry(iCountry)` - overridable callback for double-click
+ - `this.clickCountry(iCountry)` - overridable callback fro click
+ - `this.getCountryPopupHtml(iCountry)` - overridable callback to generate the HTML for the tool-tip pop-up for a country mouse-over.
+ - `this.resize()` - resizes the globe to the size of the parent div. Useful for web-responsive divs.
+ - `this.rotateTo(r)` - direct rotation to the rotational coordinate `r=[-Longitude, -Latitude]`, this is the internal D3 rotational coordinate system.
+ - `this.rotateTransition(targetR, callback)` - animated transition analogue to `this.rotateTo` with callback upon end of animation
+ - `this.rotateTransitionToICountry(iCountry, callback)` - animated rotation to country
+ - `this.resetCountryColorsFromValues(maxColor, maxValue = null, minColor = '#DDD')` - recolors the countries using `this.values` from `maxColor` to `minColor` using a linear color palette
+ - `this.draw()` - force redraw
 
 
 

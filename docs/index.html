@@ -84,35 +84,35 @@
 
       mounted: function () {
 
-        g.clickCountry = function (id) {
-          let i = g.iCountryFromId[id]
+        g.clickCountry = function (i) {
           app.message = 'clicked: ' + g.getCountryFeature(i).properties.name
-          g.setHighlight(id)
-          g.rotateTransitionToCountry(id, function () {
+          g.setHighlight(i)
+          g.rotateTransitionToICountry(i, function () {
             g.draw()
           })
         }
 
-        g.dblclickCountry = function (id) {
+        g.dblclickCountry = function (i) {
           app.message = 'double-clicked: ' + g.getCountryFeature(i).properties.name
         }
 
-        g.getCountryPopupHtml = function (id) {
-          let i = g.iCountryFromId[id]
+        g.getCountryPopupHtml = function (i) {
           let country = g.getCountryFeature(i)
-          return country.properties.name + ': ' + g.getCountryValue(i)
+          return country.properties.name + ': ' + g.values[i]
         }
 
         window.onresize = function () { g.resize() }
 
         this.changeMode()
+        g.rotateTransitionToICountry(145)
       },
 
       methods: {
 
         changeMode: function () {
           let propertyKey = this.mode
-          for (let country of g.countryFeatures) {
+          for (let i = 0; i < g.features.length; i += 1) {
+            let country = g.features[i]
             let value
             if (propertyKey === 'gdp_per_cap') {
               let gdp = parseFloat(country.properties.gdp_md_est)
@@ -125,7 +125,7 @@
             } else {
               value = country.properties[propertyKey]
             }
-            g.setCountryValue(country.id, value)
+            g.values[i] = value
           }
           let color
           if (this.mode === 'pop_est') {
@@ -136,7 +136,7 @@
             g.highlightColor = 'orange'
           } else {
             color = 'red'
-            g.highlightColor = 'pink'
+            g.highlightColor = 'lightgreen'
           }
           if (propertyKey === 'gdp_per_cap') {
             g.resetCountryColorsFromValues(color, 100000)

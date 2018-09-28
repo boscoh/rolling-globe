@@ -85,34 +85,33 @@
       mounted: function () {
 
         g.clickCountry = function (i) {
-          app.message = 'clicked: ' + g.getCountryFeature(i).properties.name
+          app.message = 'clicked: ' + g.features[i].properties.name
           g.setHighlight(i)
-          g.rotateTransitionToICountry(i, function () {
-            g.draw()
-          })
+          g.rotateTransitionToICountry(i)
         }
 
         g.dblclickCountry = function (i) {
-          app.message = 'double-clicked: ' + g.getCountryFeature(i).properties.name
+          app.message = 'double-clicked: ' + g.features[i].properties.name
         }
 
         g.getCountryPopupHtml = function (i) {
-          let country = g.getCountryFeature(i)
-          return country.properties.name + ': ' + g.values[i]
+          return g.features[i].properties.name + ': ' + g.values[i]
         }
 
         window.onresize = function () { g.resize() }
 
         this.changeMode()
-        g.rotateTransitionToICountry(145)
+
+        let i = g.getICountry({'iso_a3': 'AUS'})
+        g.rotateTransitionToICountry(i)
       },
 
       methods: {
 
         changeMode: function () {
           let propertyKey = this.mode
-          for (let i = 0; i < g.countryFeatures.length; i += 1) {
-            let country = g.countryFeatures[i]
+          for (let i = 0; i < g.features.length; i += 1) {
+            let country = g.features[i]
             let value
             if (propertyKey === 'gdp_per_cap') {
               let gdp = parseFloat(country.properties.gdp_md_est)
@@ -136,7 +135,7 @@
             g.highlightColor = 'orange'
           } else {
             color = 'red'
-            g.highlightColor = 'lightgreen'
+            g.highlightColor = 'green'
           }
           if (propertyKey === 'gdp_per_cap') {
             g.resetCountryColorsFromValues(color, 100000)
