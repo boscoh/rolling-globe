@@ -2,7 +2,7 @@
 
 # Rolling Choropleth Globe in D3
 
-Programmable chloropeth Globe in D3 with modifiable country colors, tool-tips, event handling, rotations and highlights.
+Programmable rolling chloropeth globe in D3 with modifiable country colors, tool-tips and rotations. Pre-compiled to be dropped into your webpage.
 
 Demo: <https://boscoh.github.io/rolling-globe>
 

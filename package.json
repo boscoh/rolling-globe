@@ -18,8 +18,7 @@
     "type": "git",
     "url": "https://github.com/boscoh/rolling-globe.git"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "d3": "^4.13.0",
     "d3-svg-legend": "^2.25.5",

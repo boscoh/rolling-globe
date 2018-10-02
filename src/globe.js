@@ -15,44 +15,14 @@ function zeroPad(num, places) {
 }
 
 /**
- * A Rotating Globe widget that can be parameterized by
- * country ID colors, using a value-mapped color scheme
- * that is displayed in a legend.
+ * A Rolling Chloropeth Globe widget where colors of countries can
+ * be easily remapped and displayed with a legend. Includes
+ * highlight properties.
  *
  * Country borders are taken from
- * Use world json from:
  *   https://github.com/topojson/world-atlas
- *   https://unpkg.com/world-atlas@1.1.4/world/110m.json
  *
- * Countries id use ISO numeric for each country
- *
- * Colors for countries are either set implicitly with
- * country values:
- *   this.setCountryValue (id, value)
- * Or directly with:
- *   this.setCountryColor (color)
- * where color is a hex-string color
- *
- * Allows a highlighted country that is drawn with
- * a different border color
- *
- * Resize function that can be called by your resize function
- *
- * Zoom based on this.scaleFactor
- *
- * Automatic legend from maximum values to 0
- * and mapped from light-grey to this.fillColor
- *
- * Internally countries are indexed using the world data structure.
- * A dictionary is provided to convert from ISO country codes:
- *    this.iCountryFromId
- *
- * Overrridable methods:
- *   - this.clickCountry (id)
- *   - this.dbclickCoutnry (id)
- *   - this.getCountryPopupHtml (id)
- *
- * Based on the following D3 globe code snippets:
+ * Based on the D3 globe code snippets:
  *  - https://jorin.me/d3-canvas-globe-hover/
  *  - http://bl.ocks.org/KoGor/5994804
  *  - http://bl.ocks.org/tlfrd/df1f1f705c7940a6a7c0dca47041fec8
@@ -60,11 +30,6 @@ function zeroPad(num, places) {
  */
 class Globe {
   /**
-   *
-   *
-   * Use world json from:
-   *   https://unpkg.com/world-atlas@1.1.4/world/110m.json
-   *
    * @param selector - jquery div tag to insert the globe
    */
   constructor(selector, world = world110m, worldData = world110mInfo) {
