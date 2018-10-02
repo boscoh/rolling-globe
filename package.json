@@ -1,6 +1,6 @@
 {
   "name": "rolling-globe",
-  "description": "Rolling Chloropeth SVG Globe",
+  "description": "Rolling Chloropeth Globe in D3",
   "version": "0.1.0",
   "scripts": {
     "build": "node prepare-data-json.js && webpack",
@@ -8,6 +8,7 @@
     "lint-autofix": "eslint --ext .js src --fix",
     "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check"
   },
+  "main": "dist/rolling-globe.min.js",
   "license": "MIT",
   "author": {
     "email": "apposite@gmail.com",
@@ -18,14 +19,14 @@
     "url": "https://github.com/boscoh/rolling-globe.git"
   },
   "dependencies": {
+  },
+  "devDependencies": {
     "d3": "^4.13.0",
     "d3-svg-legend": "^2.25.5",
     "jquery": "^3.3.1",
     "lodash": "^4.17.10",
     "topojson": "^3.0.2",
-    "tsv": "^0.2.0"
-  },
-  "devDependencies": {
+    "tsv": "^0.2.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.6",
     "babel-loader": "^7.1.5",
